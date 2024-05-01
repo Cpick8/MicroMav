@@ -7,10 +7,10 @@ connected = False
 packet_loss = 0 
 
 customtkinter.set_appearance_mode("System")  # Modes: system (default), light, dark
-customtkinter.set_default_color_theme("blue")  # Themes: blue (default), dark-blue, green
+customtkinter.set_default_color_theme("blue")
 project_font = 'Trebuchet MS'
 
-app = customtkinter.CTk()  # create CTk window like you do with the Tk window
+app = customtkinter.CTk()  
 app.geometry("1000x600")
 app.title("MiniMav Downlink")
 
