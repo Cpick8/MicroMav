@@ -4,6 +4,23 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
+#define MOTOR_FL_PIN 33
+#define MOTOR_FR_PIN 23
+#define MOTOR_ML_PIN 14
+#define MOTOR_MR_PIN 5
+#define MOTOR_RL_PIN 13
+#define MOTOR_RR_PIN 15
+
+#define MAX_throttle = 255
+
+#define FL_Speed = 0
+#define FR_Speed = 0
+#define ML_Speed = 0
+#define MR_Speed = 0
+#define BL_Speed = 0
+#define BR_Speed = 0
+
+
 Adafruit_MPU6050 mpu;
 
 // AP credentials
@@ -139,13 +156,25 @@ void loop() {
 
         // Sample data to send
         JSONVar data;
-        data["Acceleration"]["x"] = a.acceleration.x;
-        data["Acceleration"]["y"] = a.acceleration.y;
-        data["Acceleration"]["z"] = a.acceleration.z;
-        data["Rotation"]["x"] = g.gyro.x;
-        data["Rotation"]["y"] = g.gyro.y;
-        data["Rotation"]["z"] = g.gyro.z;
+        data["Rotation"]["x"] = a.acceleration.x;
+        data["Rotation"]["y"] = a.acceleration.y;
+        data["Rotation"]["z"] = a.acceleration.z;
+        data["Acceleration"]["x"] = g.gyro.x;
+        data["Acceleration"]["y"] = g.gyro.y;
+        data["Acceleration"]["z"] = g.gyro.z;
         data["Temperature"] = temp.temperature;
+
+        float roll = a.acceleration.x;
+        float pitch = a.acceleration.y;
+        float yaw = a.acceleration.z;
+
+        data["MotorStatus"]["FR"]["Speed"] = calculateMotorSpeed(roll, pitch, yaw);
+        data["MotorStatus"]["FL"]["Speed"] = calculateMotorSpeed(roll, pitch, yaw);
+        data["MotorStatus"]["MR"]["Speed"] = calculateMotorSpeed(roll, pitch, yaw);
+        data["MotorStatus"]["ML"]["Speed"] = calculateMotorSpeed(roll, pitch, yaw);
+        data["MotorStatus"]["BR"]["Speed"] = calculateMotorSpeed(roll, pitch, yaw);
+        data["MotorStatus"]["BL"]["Speed"] = calculateMotorSpeed(roll, pitch, yaw);
+        
 
         // Convert JSON to string
         String jsonData = JSON.stringify(data);
@@ -163,4 +192,13 @@ void loop() {
     client.stop();
     Serial.println("Client disconnected.");
   }
+}
+
+
+int calculateMotorSpeed(float roll, float pitch, float yaw) {
+  // Add your motor control logic here
+  // For a basic example, you could simply map the roll, pitch, and yaw angles to motor speeds
+  // Adjust as needed based on your hexacopter's specific requirements
+  int motor_speed = map(abs(roll) + abs(pitch) + abs(yaw), 0, 360, 0, 255);
+  return motor_speed;
 }
